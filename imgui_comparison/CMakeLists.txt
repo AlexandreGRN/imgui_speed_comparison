@@ -1,15 +1,21 @@
 cmake_minimum_required(VERSION 3.18)
-project(dear-imgui-conan CXX)
+project(dear-imgui-conan2 CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 # CONFIG option is important so that CMake doesnt search for modules into the default modules directory
 find_package(imgui CONFIG)
 find_package(glfw3 CONFIG)
 find_package(glew CONFIG)
 
-add_executable( dear-imgui-conan
+add_executable( dear-imgui-conan2
                 main.cpp
                 opengl_shader.cpp
                 file_manager.cpp
@@ -22,11 +28,5 @@ add_executable( dear-imgui-conan
                 assets/simple-shader.vs
                 assets/simple-shader.fs )
 
-add_custom_command(TARGET dear-imgui-conan
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/assets/simple-shader.vs ${PROJECT_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/assets/simple-shader.fs ${PROJECT_BINARY_DIR}
-)
-
-target_compile_definitions(dear-imgui-conan PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW)
-target_link_libraries(dear-imgui-conan imgui::imgui GLEW::glew_s glfw::glfw)
+target_compile_definitions(dear-imgui-conan2 PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW)
+target_link_libraries(dear-imgui-conan2 imgui::imgui GLEW::glew_s glfw::glfw ${CONAN_LIBS})

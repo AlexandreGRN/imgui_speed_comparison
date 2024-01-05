@@ -13,7 +13,7 @@
 #include <chrono>
 #include <vector>
 #include <bits/stdc++.h> 
-#include <boost/coroutine2/all.hpp>
+//#include <boost/coroutine2/all.hpp>
 
 class Chrono 
 {
@@ -30,13 +30,13 @@ public:
     }
     inline void print_duration(std::string message = "")
     {
-        std::cout << message << std::chrono::duration_cast<std::chrono::milliseconds>(m_end - m_start).count() << " microsec\n";
+        std::cout << message << std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start).count() << " microsec\n";
     }
-    inline std::chrono::milliseconds stop_print_return_duration(std::string message = "")
+    inline std::chrono::microseconds stop_print_return_duration(std::string message = "")
     {
         stop();
         print_duration(message);
-        return std::chrono::duration_cast<std::chrono::milliseconds>(m_end - m_start);
+        return std::chrono::duration_cast<std::chrono::microseconds>(m_end - m_start);
     }
 private:
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start;
@@ -61,20 +61,15 @@ public:
         for (int i = 0; i < 10; i++)
             threads.push_back(std::jthread(&Executable::long_function, this));
     }
+    /*void long_function_repeat_multiThread_coroutine(boost::coroutines2::coroutine<void>::push_type& yield)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            long_function();
+            yield();
+        }
+    }*/
     
-	void coroutineProcess()
-	{
-		boost::coroutines2::coroutine<int>::pull_type coro(boost::coroutines2::fixedsize_stack(), [&](auto& yield) {
-        	for (int i = 0; i < 10; ++i) {
-				yield(i);
-			}
-    	});
-
-		while (coro) {
-			int value = coro.get();
-			coro();
-		}
-	}
 };
 
 void Executable::long_function()
@@ -87,12 +82,29 @@ void Executable::long_function()
     }
 }
 
+/*std::chrono::microseconds coroutineProcess(Executable& ex)
+{
+	boost::coroutines2::coroutine<void>::pull_type coro([&](boost::coroutines2::coroutine<void>::push_type& yield)
+    {
+        ex.long_function_repeat_multiThread_coroutine(yield);
+    });
+    while (coro)
+    {
+        coro();
+    }
+}*/
+
 static void glfw_error_callback(int error, const char *description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-
+void OnButtonClick(int& singleThreadTime, int& multiThreadTime, int& multiThreadTimeCoroutine)
+{
+	singleThreadTime += 1;
+	multiThreadTime += 2;
+	multiThreadTimeCoroutine += 3;
+}
 
 
 class Window
@@ -115,30 +127,7 @@ private:
 	int Setup();
 	void MainLoop();
 	void Shutdown();
-	void OnButtonClick();
 };
-
-void Window::OnButtonClick()
-{
-	// Single Thread
-    chrono.start();
-    executable.long_function_repeat_singleThread();
-    auto duration1 = chrono.stop_print_return_duration("Single Threa: ");
-
-    // Multi Thread
-    chrono.start();
-    executable.long_function_repeat_multiThread();
-    auto duration2 = chrono.stop_print_return_duration("Multi Thread: ");
-    
-    // Multi Thread with coroutine
-    chrono.start();
-	executable.coroutineProcess();
-	auto duration3 = chrono.stop_print_return_duration("Multi Thread with coroutine: ");
-	
-	singleThreadTime += duration1.count();
-	multiThreadTime += duration2.count();
-	multiThreadTimeCoroutine += duration3.count();
-}
 
 int Window::Setup()
 {
@@ -194,7 +183,7 @@ void Window::MainLoop()
 		ImGui::Begin("Comparison graph");
 		if (ImGui::Button("Click me!"))
 		{
-			OnButtonClick();
+			OnButtonClick(singleThreadTime, multiThreadTime, multiThreadTimeCoroutine);
 		}
 		 ImGui::Text("Single Thread Time: %d", singleThreadTime);
 		 ImGui::Text("Multi Thread Time: %d", multiThreadTime);
@@ -233,6 +222,7 @@ void Window::Run()
 int main(int, char **)
 {
 	Window window;
+
 	window.Run();
 
 	return 0;
