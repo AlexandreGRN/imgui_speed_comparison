@@ -3,7 +3,7 @@
 void Executable::long_function()
 {
     std::vector<int> v;
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < iterations; i++)
     {
         v.push_back(i);
         std::sort(v.begin(), v.end());

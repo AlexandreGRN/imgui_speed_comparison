@@ -5,7 +5,6 @@ static void glfw_error_callback(int error, const char *description)
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-
 void Window::OnButtonClick()
 {
 	// Single Thread
@@ -78,13 +77,15 @@ void Window::MainLoop()
 
 		// render your GUI
 		ImGui::Begin("Comparison graph");
+		ImGui::Text("Number of iterations of the function");
+		ImGui::SliderInt("", &executable.iterations, 0, 10000);
 		 if (ImGui::Button("Start comparison"))
 		 {
 		 	OnButtonClick();
 		 }
-		 ImGui::Text("Single Thread Time: %d", singleThreadTime);
-		 ImGui::Text("Multi Thread Time: %d", multiThreadTime);
-		 ImGui::Text("Multi Thread Time Coroutine: %d", multiThreadTimeCoroutine);
+		 ImGui::Text("Single Thread Time: %d milliseconds", singleThreadTime);
+		 ImGui::Text("Multi Thread Time: %d milliseconds", multiThreadTime);
+		 ImGui::Text("Multi Thread Time Coroutine: %d milliseconds", multiThreadTimeCoroutine);
 
         ImGui::End();
 

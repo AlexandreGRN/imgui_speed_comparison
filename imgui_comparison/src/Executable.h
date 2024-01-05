@@ -10,4 +10,6 @@ public:
     void long_function_repeat_singleThread();
     void long_function_repeat_multiThread();
 	void long_function_repeat_coroutine();
+
+    int iterations = 1;
 };
