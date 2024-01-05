@@ -64,14 +64,15 @@ public:
     
 	void coroutineProcess()
 	{
-		boost::coroutines2::coroutine<int>::pull_type coro(boost::coroutines2::fixedsize_stack(), [&](auto& yield) {
+		boost::coroutines2::coroutine<void>::pull_type coro([&](boost::coroutines2::coroutine<void>::push_type& yield)
+		{
         	for (int i = 0; i < 10; ++i) {
-				yield(i);
+				long_function();
+				yield();
 			}
     	});
 
 		while (coro) {
-			int value = coro.get();
 			coro();
 		}
 	}
