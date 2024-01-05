@@ -16,17 +16,19 @@ find_package(glfw3 CONFIG)
 find_package(glew CONFIG)
 
 add_executable( dear-imgui-conan2
-                main.cpp
-                opengl_shader.cpp
-                file_manager.cpp
-                opengl_shader.h
-                file_manager.h
+                src/main.cpp
+                src/libraries.h
+                src/Executable.cpp
+                src/Executable.h
+                src/Window.cpp
+                src/Window.h
+                src/Chrono.h
+                bindings/opengl_shader.cpp
+                bindings/opengl_shader.h
                 bindings/imgui_impl_glfw.cpp
                 bindings/imgui_impl_opengl3.cpp
                 bindings/imgui_impl_glfw.h
-                bindings/imgui_impl_opengl3.h
-                assets/simple-shader.vs
-                assets/simple-shader.fs )
+                bindings/imgui_impl_opengl3.h)
 
 target_compile_definitions(dear-imgui-conan2 PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW)
 target_link_libraries(dear-imgui-conan2 imgui::imgui GLEW::glew_s glfw::glfw ${CONAN_LIBS})
