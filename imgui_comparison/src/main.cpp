@@ -1,7 +1,5 @@
 #include "libraries.h"
-#include "Executable.h"
-#include "Chrono.h"
-#include "Window.h"
+#include "Window/Window.h"
 
 int main(int, char **)
 {

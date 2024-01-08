@@ -1,36 +1,19 @@
 #include "Window.h"
 
-static void glfw_error_callback(int error, const char *description)
-{
-	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-}
-
 void Window::OnButtonClick()
 {
-	// Single Thread
-    chrono.start();
-    executable.long_function_repeat_singleThread();
-    auto duration1 = chrono.stop();
+	Chrono::Chrono chrono;
+	Executable::Executable executable{iteration};
 
-    // Multi Thread
-    chrono.start();
-    executable.long_function_repeat_multiThread();
-    auto duration2 = chrono.stop();
-    
-    // Multi Thread with coroutine
-    chrono.start();
-	executable.long_function_repeat_coroutine();
-	auto duration3 = chrono.stop();
-	
-	multiThreadTime = duration2.count();
-	multiThreadTimeCoroutine = duration3.count();
-	singleThreadTime = duration1.count();
+	singleThreadTime = chrono.runFunction<Thread::SingleThread, Executable::Executable>(&Executable::Executable::action, &executable);
+	multiThreadTime = chrono.runFunction<Thread::MultiThread, Executable::Executable>(&Executable::Executable::action, &executable);
+	multiThreadTimeCoroutine = chrono.runFunction<Thread::CoroutineThread, Executable::Executable>(&Executable::Executable::action, &executable);
 }
 
 int Window::Setup()
 {
 	// Setup window
-	glfwSetErrorCallback(glfw_error_callback);
+	glfwSetErrorCallback([](int error, const char *description){});
 	if (!glfwInit())
 		return 1;
 
@@ -77,12 +60,12 @@ void Window::MainLoop()
 
 		// render your GUI
 		ImGui::Begin("Comparison graph");
-		ImGui::Text("Number of iterations of the function");
-		ImGui::SliderInt("", &executable.iterations, 0, 10000);
-		 if (ImGui::Button("Start comparison"))
-		 {
+		 ImGui::Text("Number of iterations of the function");
+		 ImGui::SliderInt("", &iteration, 1, 2000);
+		  if (ImGui::Button("Start comparison"))
+		  {
 		 	OnButtonClick();
-		 }
+		  }
 		 ImGui::Text("Single Thread Time: %d milliseconds", singleThreadTime);
 		 ImGui::Text("Multi Thread Time: %d milliseconds", multiThreadTime);
 		 ImGui::Text("Multi Thread Time Coroutine: %d milliseconds", multiThreadTimeCoroutine);

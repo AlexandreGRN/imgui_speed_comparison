@@ -18,11 +18,9 @@ find_package(glew CONFIG)
 add_executable( dear-imgui-conan2
                 src/main.cpp
                 src/libraries.h
-                src/Executable.cpp
-                src/Executable.h
-                src/Window.cpp
-                src/Window.h
-                src/Chrono.h
+                src/Window/Window.cpp
+                src/Window/Window.h
+                src/Chrono/Chrono.h
                 bindings/opengl_shader.cpp
                 bindings/opengl_shader.h
                 bindings/imgui_impl_glfw.cpp
