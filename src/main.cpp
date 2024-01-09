@@ -1,5 +1,5 @@
-#include "libraries.h"
-#include "Window/Window.h"
+#include "libraries.hpp"
+#include "Window/Window.hpp"
 
 int main(int, char **)
 {

@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "Window.hpp"
 
 void Window::OnButtonClick()
 {
@@ -36,6 +36,7 @@ int Window::Setup()
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	ImPlot::CreateContext();
 	io = &ImGui::GetIO();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
@@ -72,6 +73,17 @@ void Window::MainLoop()
 
         ImGui::End();
 
+		/*ImGui::Begin("Comparison graph");
+		ImPlot::SetNextPlotLimits(0, 2000, 0, 1000);
+		if (ImPlot::BeginPlot("Comparison graph", "Number of iterations", "Time in milliseconds", ImVec2(-1, -1), ImPlotFlags_NoChild))
+		{
+			ImPlot::PlotLine("Single Thread", &iteration, &singleThreadTime, 2000);
+			ImPlot::PlotLine("Multi Thread", &iteration, &multiThreadTime, 2000);
+			ImPlot::PlotLine("Multi Thread Coroutine", &iteration, &multiThreadTimeCoroutine, 2000);
+			ImPlot::EndPlot();
+		}
+		ImGui::End();*/
+
 		// Render dear imgui into screen
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -86,6 +98,7 @@ void Window::Shutdown()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
+	ImPlot::DestroyContext();
 	ImGui::DestroyContext();
 	glfwDestroyWindow(window);
 	glfwTerminate();

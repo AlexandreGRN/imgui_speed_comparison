@@ -1,18 +1,7 @@
 [requires]
 boost/1.79.0
-imgui/1.74
-glfw/3.3.6
+glfw/3.3.4
 glew/2.2.0
 
 [generators]
-cmake_find_package_multi
 cmake
-
-[options]
-glew:shared=False
-
-[imports]
-./res/bindings, imgui_impl_glfw.cpp -> ../bindings
-./res/bindings, imgui_impl_opengl3.cpp -> ../bindings
-./res/bindings, imgui_impl_glfw.h -> ../bindings
-./res/bindings, imgui_impl_opengl3.h -> ../bindings
