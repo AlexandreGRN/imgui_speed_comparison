@@ -1,6 +1,6 @@
 #include "../libraries.hpp"
 
-namespace Executable
+namespace Executables
 {
     class Executable
     {
@@ -8,6 +8,8 @@ namespace Executable
         Executable(int iter) : iterations(iter) {};
         ~Executable() = default;
 
+        // very basic function to test the performance of the threads
+        // it will create than sort a vector of int
         void action()
         {
             std::vector<int> v;
@@ -18,6 +20,8 @@ namespace Executable
             }
         }
 
+        void setIteration(int iter) { iterations = iter; }
+    private:
         int iterations = 10;
     };
 }

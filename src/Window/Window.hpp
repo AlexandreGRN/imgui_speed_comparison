@@ -6,6 +6,7 @@
 #include "../Thread/MultiThread.hpp"
 #include "../Thread/CoroutineThread.hpp"
 #include "../Executable/Executable.hpp"
+#include "../Launcher/ExecutableLauncher.hpp"
 
 class Window
 {
@@ -29,4 +30,11 @@ private:
 	void Shutdown();
 
 	void OnButtonClick();
+	void SetupGraph();
+	
+	// results
+	int iterationArray[5] = {0, 300, 600, 900, 1200};
+	int singleThreadTimeResults[5];
+	int multiThreadTimeResults[5];
+	int multiThreadTimeCoroutineResults[5];
 };

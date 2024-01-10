@@ -1,15 +1,35 @@
 #include "Window.hpp"
 
+
+// Function to run the comparison depending on the number of iterations chosen in the UI
 void Window::OnButtonClick()
 {
-	Chrono::Chrono chrono;
-	Executable::Executable executable{iteration};
+	Chronos::Chrono chrono;
+	Launchers::ExecutableLauncher launcher;
+	Executables::Executable executable{iteration};
 
-	singleThreadTime = chrono.runFunction<Thread::SingleThread, Executable::Executable>(&Executable::Executable::action, &executable);
-	multiThreadTime = chrono.runFunction<Thread::MultiThread, Executable::Executable>(&Executable::Executable::action, &executable);
-	multiThreadTimeCoroutine = chrono.runFunction<Thread::CoroutineThread, Executable::Executable>(&Executable::Executable::action, &executable);
+	singleThreadTime = launcher.runFunction<Threads::SingleThread, Executables::Executable, Chronos::Chrono>(&Executables::Executable::action, &executable, chrono);
+	multiThreadTime = launcher.runFunction<Threads::MultiThread, Executables::Executable, Chronos::Chrono>(&Executables::Executable::action, &executable, chrono);
+	multiThreadTimeCoroutine = launcher.runFunction<Threads::CoroutineThread, Executables::Executable, Chronos::Chrono>(&Executables::Executable::action, &executable, chrono);
 }
 
+// Function to run the comparison for the graph before the start of the app
+void Window::SetupGraph()
+{
+	Chronos::Chrono chrono;
+	Launchers::ExecutableLauncher launcher;
+	Executables::Executable executable{0};
+
+	for (int i = 0 ; i < 5 ; i++)
+	{
+		executable.setIteration(iterationArray[i]);
+		singleThreadTimeResults[i] = launcher.runFunction<Threads::SingleThread, Executables::Executable, Chronos::Chrono>(&Executables::Executable::action, &executable, chrono);
+		multiThreadTimeResults[i] = launcher.runFunction<Threads::MultiThread, Executables::Executable, Chronos::Chrono>(&Executables::Executable::action, &executable, chrono);
+		multiThreadTimeCoroutineResults[i] = launcher.runFunction<Threads::CoroutineThread, Executables::Executable, Chronos::Chrono>(&Executables::Executable::action, &executable, chrono);
+	}
+}
+
+// Function to setup the window
 int Window::Setup()
 {
 	// Setup window
@@ -45,6 +65,7 @@ int Window::Setup()
 	return 0;
 }
 
+// Function to run the main loop of the app and render the UI
 void Window::MainLoop()
 {
 	while (!glfwWindowShouldClose(window))
@@ -53,14 +74,12 @@ void Window::MainLoop()
 		glfwPollEvents();
 		glClearColor(1.00f, 0.00f, 0.00f, 1.00f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		// fSstart new frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// render your GUI
-		ImGui::Begin("Comparison graph");
+		// Window 1
+		ImGui::Begin("Comparison specific value");
 		 ImGui::Text("Number of iterations of the function");
 		 ImGui::SliderInt("", &iteration, 1, 2000);
 		  if (ImGui::Button("Start comparison"))
@@ -70,19 +89,19 @@ void Window::MainLoop()
 		 ImGui::Text("Single Thread Time: %d milliseconds", singleThreadTime);
 		 ImGui::Text("Multi Thread Time: %d milliseconds", multiThreadTime);
 		 ImGui::Text("Multi Thread Time Coroutine: %d milliseconds", multiThreadTimeCoroutine);
+		ImGui::End();
 
-        ImGui::End();
-
-		/*ImGui::Begin("Comparison graph");
-		ImPlot::SetNextPlotLimits(0, 2000, 0, 1000);
-		if (ImPlot::BeginPlot("Comparison graph", "Number of iterations", "Time in milliseconds", ImVec2(-1, -1), ImPlotFlags_NoChild))
-		{
-			ImPlot::PlotLine("Single Thread", &iteration, &singleThreadTime, 2000);
-			ImPlot::PlotLine("Multi Thread", &iteration, &multiThreadTime, 2000);
-			ImPlot::PlotLine("Multi Thread Coroutine", &iteration, &multiThreadTimeCoroutine, 2000);
+		// Window 2
+		ImGui::Begin("Comparison graph per iteration");
+		 ImPlot::SetNextPlotLimits(0, 1200, 0, 300);
+		 if (ImPlot::BeginPlot("Comparison graph", "Number of iterations", "Time in milliseconds", ImVec2(-1, -1), ImPlotFlags_NoChild))
+		 {
+			ImPlot::PlotLine("Single Thread", iterationArray, singleThreadTimeResults, 5);
+			ImPlot::PlotLine("Multi Thread", iterationArray, multiThreadTimeResults, 5);
+			ImPlot::PlotLine("Multi Thread Coroutine", iterationArray, multiThreadTimeCoroutineResults, 5);
 			ImPlot::EndPlot();
-		}
-		ImGui::End();*/
+		 }
+		ImGui::End();
 
 		// Render dear imgui into screen
 		ImGui::Render();
@@ -94,6 +113,7 @@ void Window::MainLoop()
 	}
 }
 
+// Function to shutdown the window
 void Window::Shutdown()
 {
 	ImGui_ImplOpenGL3_Shutdown();
@@ -104,8 +124,10 @@ void Window::Shutdown()
 	glfwTerminate();
 }
 
+// Function to setup the app, run it and shutdown it at the end
 void Window::Run()
 {
+	SetupGraph();
 	Setup();
 	MainLoop();
 	Shutdown();

@@ -1,12 +1,13 @@
 #include "../libraries.hpp"
 
-namespace Thread{
+namespace Threads{
     class MultiThread
     {
     public:
         MultiThread() = default;
         ~MultiThread() = default;
 
+        // Run the `function` passed in argument x times
         template <typename ExecutableClass>
         void run(void(ExecutableClass::*func)(), ExecutableClass* exec)
         {
@@ -16,6 +17,7 @@ namespace Thread{
                 threads.push_back(std::jthread(&MultiThread::doRun<ExecutableClass>, this, func, exec));
         }
 
+        // Set the number of iterations
         void set_iterations(int iterations)
         {
             if (iterations <= 10)
@@ -25,6 +27,7 @@ namespace Thread{
     private:
         int iterations = 10;
 
+        // Run the `function` passed in argument | This function is used and needed for threads
         template <typename ExecutableClass>
         void doRun(void(ExecutableClass::*func)(), ExecutableClass* exec)
         {

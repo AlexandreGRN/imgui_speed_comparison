@@ -1,12 +1,13 @@
 #include "../libraries.hpp"
 
-namespace Thread{
+namespace Threads{
     class CoroutineThread
     {
     public:
         CoroutineThread() = default;
         ~CoroutineThread() = default;
 
+        // Run the `function` passed in argument x times
         template <typename ExecutableClass>
         void run(void(ExecutableClass::*func)(), ExecutableClass* exec)
         {
@@ -23,6 +24,7 @@ namespace Thread{
             }
         }
 
+        // Set the number of iterations
         void set_iterations(int iterations)
         {
             if (iterations <= 10)
